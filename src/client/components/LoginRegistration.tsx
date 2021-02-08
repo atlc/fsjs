@@ -22,6 +22,7 @@ const LoginRegistrationForm: React.FC<LRProps> = (props) => {
             const token = await api_helper('/auth/login', 'POST', user);
             localStorage.setItem('token', token.token);
             localStorage.setItem('userid', token.userid);
+            history.push('/books');
         }
     }
 
