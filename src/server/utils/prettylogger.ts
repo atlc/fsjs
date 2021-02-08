@@ -1,0 +1,1 @@
+export const prettylog = (loggable: any) => console.log('\x1b[46m\x1b[30m%s\x1b[0m', loggable);

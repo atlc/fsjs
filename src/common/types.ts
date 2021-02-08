@@ -1,12 +1,17 @@
 /* Shared Interfaces */ 
 
+export interface ICategory {
+    id: number;
+    name: string;
+}
+
 export interface IUser {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    created_at: Date;
-    updated_at: Date;
+    id?: number;
+    email?: string;
+    hashed?: string;
+    name?: string;
+    created_at?: Date;
+    updated_at?: Date;
 }
 
 export interface IAuthor {
@@ -21,17 +26,25 @@ export interface IAuthor {
 export interface IBook {
     id: string;
     title: string;
-    // may be multiple authors, display on frontend with authors.join
-    authorid: string[];
-    category_id?: string;
-    published_date?: number;
+    author: string;
+    categoryid?: ICategory["id"];
     price?: number;
     created_at: Date;
     updated_at: Date;
 }
 
+export interface IAuthTokens {
+	id: number;
+    userid: IUser["id"];
+    token: string;
+	created_at: string;
+};
+
+
+
 /* Backend Typings */
 import { Request } from 'express';
+import { NumberLiteralType } from 'typescript';
 
 export interface IReqUser extends Request {
     user: {
