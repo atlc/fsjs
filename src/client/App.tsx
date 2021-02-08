@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Auth from './components/Auth';
 import AllBooks from './views/AllBooks';
 import CreateBook from './views/CreateBook';
 import SingleBook from './views/SingleBook';
@@ -25,7 +26,7 @@ const App: React.FC<AppProps> = () => {
                         <CreateBook />
                     </Route>
                     <Route exact path="/books/edit/:id">
-                        <EditBook />
+                        <Auth><EditBook /></Auth>
                     </Route>
                     <Route exact path="/books/:id">
                         <SingleBook />

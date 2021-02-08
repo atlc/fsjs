@@ -20,7 +20,8 @@ const LoginRegistrationForm: React.FC<LRProps> = (props) => {
             });
         } else {
             const token = await api_helper('/auth/login', 'POST', user);
-            localStorage.setItem('TOKEN', token);
+            localStorage.setItem('token', token.token);
+            localStorage.setItem('userid', token.userid);
         }
     }
 
