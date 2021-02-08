@@ -5,6 +5,8 @@ import AllBooks from './views/AllBooks';
 import CreateBook from './views/CreateBook';
 import SingleBook from './views/SingleBook';
 import EditBook from './views/EditBook';
+import Login from './views/Login';
+import Register from './views/Register';
 
 const App: React.FC<AppProps> = () => {
 
@@ -27,6 +29,12 @@ const App: React.FC<AppProps> = () => {
                     </Route>
                     <Route exact path="/books/:id">
                         <SingleBook />
+                    </Route>
+                    <Route exact path="/login">
+                        <Login />
+                    </Route>
+                    <Route exact path="/register">
+                        <Register />
                     </Route>
                 </Switch>
             </div>

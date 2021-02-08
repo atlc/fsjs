@@ -17,8 +17,10 @@ export const Query = <T = any>(queryString: string, values?: any[]) => {
 
 import Books from './queries/books';
 import Categories from './queries/categories';
+import Users from './queries/users';
 
 export default {
     Books,
-    Categories
+    Categories,
+    Users
 }

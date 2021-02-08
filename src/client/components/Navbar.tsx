@@ -7,8 +7,8 @@ const Navbar: FC<NavbarProps> = () => {
             <Link className='btn btn-info shadow-sm m-2' to='/'>Home</Link>
             <Link className='btn btn-info shadow-sm m-2' to='/books'>Books</Link>
             <Link className='btn btn-info shadow-sm m-2' to='/books/new'>Create</Link>
-            <Link className='btn btn-info shadow-sm m-2' to='/'>Login</Link>
-            <Link className='btn btn-info shadow-sm m-2' to='/'>Register</Link>
+            <Link className='btn btn-info shadow-sm m-2' to='/login'>Login</Link>
+            <Link className='btn btn-info shadow-sm m-2' to='/register'>Register</Link>
         </div>
     );
 }
