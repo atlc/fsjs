@@ -23,7 +23,7 @@ const App: React.FC<AppProps> = () => {
                         <AllBooks />
                     </Route>
                     <Route exact path="/books/new">
-                        <CreateBook />
+                        <Auth><CreateBook /></Auth>
                     </Route>
                     <Route exact path="/books/edit/:id">
                         <Auth><EditBook /></Auth>

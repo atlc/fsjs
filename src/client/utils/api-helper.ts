@@ -1,14 +1,9 @@
-const TOKEN = 'token_lol';
-
-export const login = (token: string) =>  localStorage.setItem(TOKEN, token);
-export const logout = () => localStorage.removeItem(TOKEN);
-
 export const api_helper = async <T = unknown>(uri: string, method: string = 'GET', body?: {}) => {
     const headers: { [key: string]: string} = {
         'Content-Type': 'application/json'
     };
 
-    const token = localStorage.getItem(TOKEN);
+    const token = localStorage.getItem('token');
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
     try {

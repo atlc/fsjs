@@ -5,12 +5,12 @@ import * as passport from 'passport';
 
 const router = express.Router();
 
-const isUser = () => {
-    router.use(passport.authenticate('jwt', { session: false}), (req, res, next) => {
-        console.log(req.user);
-        next();
-    });
-}
+// const isUser = (req, res, next) => {
+//     router.use(passport.authenticate('jwt', { session: false}), (req, res, next) => {
+//         console.log(req.user);
+//         next();
+//     });
+// }
 
 router.get('/:id?', async (req, res) => {
     try {
@@ -23,7 +23,7 @@ router.get('/:id?', async (req, res) => {
     }
 });
 
-router.post('/', isUser, async (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
         const book: IBook = req.body;
         const bookRes = await db.Books.do.create(book);
@@ -38,7 +38,7 @@ router.post('/', isUser, async (req, res) => {
     }
 });
 
-router.put('/:id', isUser, async (req, res) => {
+router.put('/:id', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
         const id = Number(req.params.id);
         const book: IBook = req.body;
@@ -55,7 +55,7 @@ router.put('/:id', isUser, async (req, res) => {
     }
 });
 
-router.delete('/:id', isUser, async (req, res) => {
+router.delete('/:id', passport.authenticate('jwt', { session: false}), async (req, res) => {
     try {
         const id = Number(req.params.id);
         await db.Books.do.destroy(id);

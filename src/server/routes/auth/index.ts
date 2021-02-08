@@ -29,7 +29,6 @@ router.post('/login', async (req, res) => {
             if (compared) {
                 delete user.hashed;
                 const token = createToken({ userid: user.id });
-                // await db.Users.do.add_authtoken(user.id, token);
                 res.json({ userid: user.id, token });
             } else {
                 throw new Error('Unable to authenticate');
