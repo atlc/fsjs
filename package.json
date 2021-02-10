@@ -7,7 +7,8 @@
     "watch:build": "npx webpack -w",
     "watch:server": "nodemon dist/server.js",
     "dev": "npm-run-all --parallel watch:*",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test": "newman run BookStore.postman_collection.json -n 10"
   },
   "keywords": [],
   "author": "",
@@ -55,6 +56,7 @@
     "webpack-node-externals": "^1.7.2"
   },
   "devDependencies": {
+    "newman": "^5.2.2",
     "nodemon": "^1.19.4",
     "npm-run-all": "^4.1.3"
   }

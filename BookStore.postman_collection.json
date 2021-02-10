@@ -1,0 +1,665 @@
+{
+	"info": {
+		"_postman_id": "4d2fafa8-f574-459b-881b-a50a3c559150",
+		"name": "BookStore",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Register returns 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Email is not already registered\", function () {",
+									"    const res = pm.response.json();",
+									"    pm.expect(res.code).to.not.eql('ER_DUP_ENTRY');",
+									"});",
+									"",
+									"pm.test(\"Successfully created user\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.affectedRows).to.eql(1);",
+									"    if (jsonData.affectedRows === 1) {",
+									"        const currentUser = JSON.parse(pm.request.body);",
+									"        console.log(`New user:\\n`, currentUser);",
+									"        pm.collectionVariables.set(\"current_email\", currentUser.email);",
+									"        pm.collectionVariables.set(\"current_password\", currentUser.password);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{$randomPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}:{{port}}/auth/register",
+							"host": [
+								"{{address}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Login returns 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Successfully logged in user\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.userid).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Successfully got token\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.token).to.not.be.null;",
+									"    console.log(`New token:\\t${jsonData.token}`);",
+									"    if (jsonData.token) pm.collectionVariables.set(\"token\", jsonData.token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{current_email}}\",\n    \"password\": \"{{current_password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{address}}:{{port}}/auth/login",
+							"host": [
+								"{{address}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "books",
+					"item": [
+						{
+							"name": "All Books",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/books/ returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 200ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);",
+											"});",
+											"",
+											"pm.test(\"At least 1 book is returned\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.length).to.be.gte(1);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjE0LCJpYXQiOjE2MTI3NTQ5NTYsImV4cCI6MTYxMzk2NDU1Nn0.1MuIRssc7nl5L81NJ_tY-HYJeFdU5RdQh8WaY-lNMKs",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books/",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create UNAUTHORIZED",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Cannot POST while unauthorized\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 100ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(100);",
+											"});",
+											"",
+											"pm.test(\"Return 'unauthorized' response\", function () {",
+											"    const resString = pm.response.status;",
+											"    pm.expect(resString).to.be.eql(\"Unauthorized\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "does not exist lol",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"categoryid\": 3,\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"author\": \"{{$randomFullName}}\",\n    \"price\": \"{{$randomPrice}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create new Book",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"POST new book returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Responds with book's insertId\", function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData.insertId).to.not.be.null;",
+											"    if (jsonData.insertId) pm.collectionVariables.set(\"current_book\", jsonData.insertId);",
+											"",
+											"    const newBookBody = JSON.parse(pm.request.body);",
+											"    console.log('New book:\\n', newBookBody);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"categoryid\": 3,\n    \"title\": \"{{$randomCatchPhrase}}\",\n    \"author\": \"{{$randomFullName}}\",\n    \"price\": \"{{$randomPrice}}\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SingleBook By ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/books/:id returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 100ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);",
+											"});",
+											"",
+											"pm.test(\"Just 1 item is returned\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.length).to.be.undefined; // Returns as an object so length /should/ be undefined per my route",
+											"});",
+											"",
+											"pm.test(\"Book is valid/has id\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.id).to.be.gte(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books/:id",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{current_book}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update SingleBook By ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Updating the book returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Update time is less than 50ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(50);",
+											"});",
+											"",
+											"pm.test(\"At least one row updated\", function () {",
+											"    const jsonData = pm.response.json();",
+											"    pm.expect(jsonData.affectedRows).to.not.be.null;",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"price\": {{$randomPrice}}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books/:id",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{current_book}}"
+										}
+									]
+								},
+								"description": "Gives the current book a random price"
+							},
+							"response": []
+						},
+						{
+							"name": "SingleBook By ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Deleting the book returns 200 code\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Deletion time is less than 50ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(50);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books/:id",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "{{current_book}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "categories",
+					"item": [
+						{
+							"name": "SingleCategory",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/category/:id returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 100ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(100);",
+											"});",
+											"",
+											"pm.test(\"Just 1 item is returned\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.length).to.be.undefined; // Returns as an object so length /should/ be undefined per my route",
+											"});",
+											"",
+											"pm.test(\"Category is valid/has id\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.id).to.be.gte(0);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{address}}:{{port}}/api/books/:id",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"books",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "All Categories",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"/categories/ returns 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 50ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(50);",
+											"});",
+											"",
+											"pm.test(\"At least 1 category is returned\", function () {",
+											"    const res = pm.response.json();",
+											"    pm.expect(res.length).to.be.gte(1);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{address}}:{{port}}/api/categories",
+									"host": [
+										"{{address}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "address",
+			"value": "localhost"
+		},
+		{
+			"key": "port",
+			"value": "42069"
+		},
+		{
+			"key": "current_email",
+			"value": "Anissa37@yahoo.com"
+		},
+		{
+			"key": "current_password",
+			"value": "En1HFeVNLr5KRpA"
+		},
+		{
+			"key": "token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyaWQiOjM5LCJpYXQiOjE2MTI5MjM1NzEsImV4cCI6MTYxNDEzMzE3MX0.KJRbm5KI6YWigohmMgDgOwjxLh5rk8cypiJpp1DY5aM"
+		},
+		{
+			"key": "current_book",
+			"value": 19
+		}
+	]
+}
